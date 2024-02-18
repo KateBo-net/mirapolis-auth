@@ -6,7 +6,8 @@ import com.github.javafaker.Faker;
 import java.util.Locale;
 
 public class DataHelper {
-    private DataHelper() {}
+    private DataHelper() {
+    }
 
     @Value
     public static class AuthInfo {
@@ -15,6 +16,7 @@ public class DataHelper {
     }
 
     private static final Faker faker = new Faker(new Locale("en"));
+
     public static String getRandomLogin() {
         return faker.name().username();
     }

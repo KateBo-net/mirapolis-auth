@@ -3,20 +3,23 @@ package ru.mirapolis.test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.WindowType;
+import ru.mirapolis.page.DashboardPage;
 import ru.mirapolis.page.LoginPage;
 
-import static com.codeborne.selenide.Selenide.closeWebDriver;
-import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.*;
 import static ru.mirapolis.data.DataHelper.*;
 
 public class AuthTest {
+    String loginURL = "https://lmslite47vr.demo.mirapolis.ru/mira";
 
     @BeforeEach
     void setup() {
-        open("https://lmslite47vr.demo.mirapolis.ru/mira");
+        open(loginURL);
     }
+
     @AfterEach
-    void after(){
+    void after() {
         closeWebDriver();
     }
 
@@ -32,6 +35,13 @@ public class AuthTest {
         var loginPage = new LoginPage();
         var authInfo = new AuthInfo(getValidAuthInfo().getLogin().toUpperCase(), getValidAuthInfo().getPassword());
         loginPage.validLogin(authInfo);
+    }
+
+    @Test
+    void shouldGetErrorIfEmptyFields() {
+        var loginPage = new LoginPage();
+        var authInfo = new AuthInfo("", "");
+        loginPage.invalidLogin(authInfo);
     }
 
     @Test
@@ -79,14 +89,51 @@ public class AuthTest {
     @Test
     void shouldGetErrorIfLoginWithExtraSpace() {
         var loginPage = new LoginPage();
-        var authInfo = new AuthInfo(" " + getValidAuthInfo().getLogin() + " ", getValidAuthInfo().getPassword());
+        var authInfo = new AuthInfo(getValidAuthInfo().getLogin() + " ", getValidAuthInfo().getPassword());
         loginPage.invalidLogin(authInfo);
     }
 
     @Test
     void shouldGetErrorIfPasswordWithExtraSpace() {
         var loginPage = new LoginPage();
-        var authInfo = new AuthInfo(getValidAuthInfo().getLogin(), " " + getValidAuthInfo().getPassword() + " ");
+        var authInfo = new AuthInfo(getValidAuthInfo().getLogin(), " " + getValidAuthInfo().getPassword());
         loginPage.invalidLogin(authInfo);
+    }
+
+    @Test
+    void shouldOpenDashboardInNewTabIfAlreadyLogin() {
+        var loginPage = new LoginPage();
+        var authInfo = getValidAuthInfo();
+        loginPage.validLogin(authInfo);
+        switchTo().newWindow(WindowType.TAB);
+        open(loginURL);
+        new DashboardPage();
+    }
+
+    @Test
+    void shouldLogoutInAllTabs() {
+        var loginPage = new LoginPage();
+        var authInfo = getValidAuthInfo();
+        loginPage.validLogin(authInfo);
+        switchTo().newWindow(WindowType.TAB);
+        open(loginURL);
+        var dashboard = new DashboardPage();
+        dashboard.logOut();
+        switchTo().window(0);
+        refresh();
+        loginPage.checkVisible();
+    }
+
+    @Test
+    void shouldNotReturnToDashboardAfterLogout() {
+        var loginPage = new LoginPage();
+        var authInfo = getValidAuthInfo();
+        loginPage.validLogin(authInfo);
+        var dashboard = new DashboardPage();
+        dashboard.logOut();
+        back();
+        loginPage.checkVisible();
+        forward();
+        loginPage.checkVisible();
     }
 }

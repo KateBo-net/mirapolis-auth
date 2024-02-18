@@ -11,23 +11,27 @@ import static com.codeborne.selenide.Selenide.switchTo;
 
 public class LoginPage {
 
-    private SelenideElement loginField = $("input[name=user]");
-    private SelenideElement passwordField = $("input[name=password]");
-    private SelenideElement loginButton = $("button[type=submit]");
-    private SelenideElement loginPage = $(".mira-page-login");
+    private final SelenideElement loginField = $("input[name=user]");
+    private final SelenideElement passwordField = $("input[name=password]");
+    private final SelenideElement loginButton = $("button[type=submit]");
+    private final SelenideElement loginPage = $(".mira-page-login");
 
-    public LoginPage(){
+    public LoginPage() {
         loginPage.shouldBe(visible);
     }
 
-    public DashboardPage validLogin (DataHelper.AuthInfo info){
+    public void checkVisible() {
+        loginPage.shouldBe(visible);
+    }
+
+    public void validLogin(DataHelper.AuthInfo info) {
         loginField.setValue(info.getLogin());
         passwordField.setValue(info.getPassword());
         loginButton.click();
-        return new DashboardPage();
+        new DashboardPage();
     }
 
-    public void invalidLogin (DataHelper.AuthInfo info){
+    public void invalidLogin(DataHelper.AuthInfo info) {
         loginField.setValue(info.getLogin());
         passwordField.setValue(info.getPassword());
         loginButton.click();
