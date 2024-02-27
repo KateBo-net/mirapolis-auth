@@ -14,9 +14,9 @@ public class DashboardPage {
         startPage.shouldBe(visible);
     }
 
-    public void logOut() {
+    public LoginPage logOut() {
         logoutMenu.click();
         logoutLink.click();
-        new LoginPage();
+        return new LoginPage();
     }
 }

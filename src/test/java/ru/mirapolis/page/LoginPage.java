@@ -20,21 +20,23 @@ public class LoginPage {
         loginPage.shouldBe(visible);
     }
 
-    public void checkVisible() {
-        loginPage.shouldBe(visible);
+    public SelenideElement getElementLoginPage() {
+        return loginPage;
     }
 
-    public void validLogin(DataHelper.AuthInfo info) {
+    private void login(DataHelper.AuthInfo info){
         loginField.setValue(info.getLogin());
         passwordField.setValue(info.getPassword());
         loginButton.click();
-        new DashboardPage();
+    }
+
+    public DashboardPage validLogin(DataHelper.AuthInfo info) {
+        login(info);
+        return new DashboardPage();
     }
 
     public void invalidLogin(DataHelper.AuthInfo info) {
-        loginField.setValue(info.getLogin());
-        passwordField.setValue(info.getPassword());
-        loginButton.click();
+        login(info);
         Alert alert = switchTo().alert();
         Assertions.assertTrue(alert.getText().contains("Неверные данные для авторизации"));
         alert.accept();
